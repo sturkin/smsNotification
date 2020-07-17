@@ -3,7 +3,6 @@
 
 namespace App\Weather;
 
-
 class WeatherService
 {
     private $whether;
@@ -13,8 +12,9 @@ class WeatherService
         $this->whether = $whether;
     }
     
-    public function getTemperatureByCity(string $city): int {
-    
+    public function getTemperatureByCity(string $city): int
+    {
+        
         /** @var Temperature $temp */
         $temp = $this->whether->getTemperatureByCity($city);
         

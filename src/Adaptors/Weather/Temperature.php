@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 namespace App\Adaptors\Weather;
@@ -7,7 +7,7 @@ use App\Weather\Temperature as ITemperature;
 
 class Temperature implements ITemperature
 {
-    CONST KELVIN_CELSIUM_DIFF = 273.15;
+    const KELVIN_CELSIUM_DIFF = 273.15;
     
     private $kelvinTemp;
     
@@ -18,7 +18,7 @@ class Temperature implements ITemperature
     
     public function byCelsius(): int
     {
-        return (int) round($this->kelvinTemp - static::KELVIN_CELSIUM_DIFF);
+        return (int)round($this->kelvinTemp - static::KELVIN_CELSIUM_DIFF);
     }
     
 }

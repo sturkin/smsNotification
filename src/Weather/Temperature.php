@@ -2,7 +2,8 @@
 
 namespace App\Weather;
 
-interface Temperature {
+interface Temperature
+{
     
     public function byCelsius(): int;
     

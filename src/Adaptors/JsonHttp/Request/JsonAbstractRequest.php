@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
 
-namespace App\Adaptors\JsonHttp;
+namespace App\Adaptors\JsonHttp\Request;
 
 
 use App\Adaptors\JsonHttp\JsonResponse;
-use PHPUnit\Util\Exception;
 
-class JsonGetRequest
+abstract class JsonAbstractRequest
 {
+    
     private $headers = [];
     private $url;
     private $ch;
@@ -19,16 +19,18 @@ class JsonGetRequest
     public function __construct(string $url)
     {
         $this->url = $url;
-    
+        
     }
     
-    public function header(string $key, string $value): JsonGetRequest  {
+    public function header(string $key, string $value): self
+    {
         $this->headers[$key] = $value;
         
         return $this;
     }
     
-    public function execute(): JsonResponse {
+    public function execute(): JsonResponse
+    {
         
         $this->init();
         $this->makeRequest();
@@ -38,11 +40,18 @@ class JsonGetRequest
         return $response;
     }
     
-
+    abstract protected function afterInit();
     
-    private function init() {
+    protected function getCh()
+    {
+        return $this->ch;
+    }
+    
+    
+    private function init()
+    {
         $this->ch = curl_init();
-    
+        
         $options = array(
             CURLOPT_HEADER => 1,
             CURLOPT_URL => $this->url,
@@ -52,24 +61,27 @@ class JsonGetRequest
             CURLOPT_TIMEOUT => 4,
         );
         curl_setopt_array($this->ch, $options);
-    
+        
         $headers = [];
         foreach ($this->headers as $key => $value) {
             $headers[] = "$key: $value";
         }
         
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+        
+        $this->afterInit();
     }
     
-    private function makeRequest() {
-        if( ! $this->result = curl_exec($this->ch))
-        {
-            throw new Exception(curl_error($this->ch));
+    private function makeRequest()
+    {
+        if (!$this->result = curl_exec($this->ch)) {
+            throw new \Exception(curl_error($this->ch));
         }
         $this->headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
     }
     
-    private function makeResponse(): JsonResponse {
+    private function makeResponse(): JsonResponse
+    {
         $headers = $this->parseHeadersString();
         
         $code = $headers['http_code'];
@@ -86,12 +98,13 @@ class JsonGetRequest
         $headers = array();
         
         foreach (explode("\r\n", $headerStr) as $i => $line)
-            if ($i === 0)
-                $headers['http_code'] = $line;
-            else
-            {
+            if ($i === 0) {
+                list($protocol, $code, $title) = explode(' ', $line);
+                $headers['http_code'] = $code;
+                
+            } else {
                 list ($key, $value) = explode(': ', $line);
-                if(!empty($key)) {
+                if (!empty($key)) {
                     $headers[$key] = $value;
                 }
             }
@@ -99,7 +112,8 @@ class JsonGetRequest
         return $headers;
     }
     
-    private function parseBody(): string {
+    private function parseBody(): string
+    {
         return substr($this->result, $this->headerSize);
     }
     

@@ -2,7 +2,8 @@
 
 namespace App\Weather;
 
-interface WeatherProvider {
+interface WeatherProvider
+{
     
     public function getTemperatureByCity(string $city): Temperature;
     

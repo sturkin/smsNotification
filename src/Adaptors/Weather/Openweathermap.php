@@ -15,7 +15,7 @@ class Openweathermap implements WeatherProvider
     private $baseUrl = 'api.openweathermap.org/data/2.5/weather';
     private $baseParams = [];
     
-    public function __construct(string $apiKey, JsonRequestBuilder $requestBuilder )
+    public function __construct(string $apiKey, JsonRequestBuilder $requestBuilder)
     {
         $this->apiKey = $apiKey;
         $this->requestBuilder = $requestBuilder;
@@ -27,22 +27,23 @@ class Openweathermap implements WeatherProvider
     public function getTemperatureByCity(string $city): ITemperature
     {
         $url = $this->buildUrl(['q' => $city]);
-        $cityWeather = $this->requestBuilder->get($url,[]);
-
-        var_dump($cityWeather,$url);
+        $cityWeather = $this->requestBuilder->get($url, []);
+        
         if (empty($cityWeather->get('main')) || !$cityWeather->get('main')->temp) {
             //good place to put logger
             throw new Exception('Invalid openweathermap response');
         }
-    
+        
         return new Temperature($cityWeather->get('main')->temp);
     }
     
-    private function initBaseParams(): void {
+    private function initBaseParams(): void
+    {
         $this->baseParams['appid'] = $this->apiKey;
     }
     
-    private function buildUrl($params): string {
+    private function buildUrl($params): string
+    {
         $finalPrams = array_merge($this->baseParams, $params);
         
         return $this->baseUrl . '?' . http_build_query($finalPrams);

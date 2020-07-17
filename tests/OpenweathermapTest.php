@@ -9,16 +9,16 @@ class OpenweathermapTest extends TestCase
     {
         $city = 'Thessaloniki';
         $apiKey = 'asdasdasda3s';
-        $returnTemp = 273.15+20;
+        $returnTemp = 273.15 + 20;
         $mockJsonRequestBuilder = $this->createMock(\App\Adaptors\JsonHttp\JsonRequestBuilder::class);
         
         $mockJsonRequestBuilder->expects($this->any())
             ->method('get')
             ->with(
-                $this->callback(function($url) use ($apiKey,$city) {
+                $this->callback(function ($url) use ($apiKey, $city) {
                     $urlParts = parse_url($url);
                     $queryParams = [];
-                    parse_str($urlParts['query'],$queryParams);
+                    parse_str($urlParts['query'], $queryParams);
                     
                     return $queryParams['appid'] === $apiKey && $queryParams['q'] === $city;
                 }),
@@ -30,8 +30,8 @@ class OpenweathermapTest extends TestCase
                         return new \App\Adaptors\JsonHttp\JsonResponse(
                             200,
                             [],
-                            json_encode((object) [
-                                'main' => (object) [
+                            json_encode((object)[
+                                'main' => (object)[
                                     'temp' => $returnTemp,
                                 ]
                             ])
@@ -43,8 +43,8 @@ class OpenweathermapTest extends TestCase
         $openweathermap = new \App\Adaptors\Weather\Openweathermap($apiKey, $mockJsonRequestBuilder);
         $temp = $openweathermap->getTemperatureByCity($city);
         
-        $this->assertSame(20,$temp->byCelsius());
+        $this->assertSame(20, $temp->byCelsius());
     }
-
+    
     
 }

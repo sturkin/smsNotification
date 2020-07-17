@@ -16,15 +16,23 @@ class JsonResponse
         $this->body = json_decode($body);
     }
     
-    public function header(string $key): string {
+    public function header(string $key): string
+    {
         return $this->headers[$key];
     }
     
-    public function get(string $key) {
+    public function get(string $key)
+    {
         return isset($this->body->$key) ? $this->body->$key : null;
     }
     
-    public function getCode(): int {
+    public function getBody()
+    {
+        return $this->body;
+    }
+    
+    public function getCode(): int
+    {
         return $this->code;
     }
     

@@ -1,37 +1,55 @@
-<?php
+<?php declare(strict_types=1);
 
 
-namespace App\Notification\Notification;
+namespace App\Notification\Notifications;
 
 
-abstract class AbstractNotification
+use App\Notification\Notifications\Directions\DirectionCollection;
+use App\Notification\Sender\DirectionCollection as IDirectionCollection;
+use App\Notification\Sender\Notification;
+use App\Notification\Sender\SendDirection;
+
+abstract class AbstractNotification implements Notification
 {
-    private $to;
+    
     private $text;
+    private $sendDirections;
     
-    final public function getTo()
+    public function getDirections(): IDirectionCollection
     {
-        return $this->prepareTo();
+        return $this->sendDirections;
     }
     
-    protected function setTo($to)
+    public function addSendDirection(SendDirection $direction)
     {
-        $this->to = $to;
+        if (empty($this->sendDirections)) {
+            $this->sendDirections = new DirectionCollection();
+        }
+        $this->sendDirections->addDirection($direction);
     }
     
-    final public function getText()
+    public function getText(): string
     {
-        return $this->prepareText();
+        return $this->text;
     }
     
-    protected function setText($text)
+    protected function setText(string $text)
     {
         $this->text = $text;
     }
     
-    abstract protected function prepareText(): string;
-    abstract protected function prepareTo(): string;
-    
+    final public function isValid(): bool
+    {
+        $res = true;
+        if (count($this->sendDirections) < 1) {
+            $res = false;
+        }
+        if (empty($this->text)) {
+            $res = false;
+        }
+        
+        return $res;
+    }
     
     
 }

@@ -1,0 +1,4 @@
+I wasn't able to send a SMS because the test task do not contain "to" phone number... But I believe if there add "to"
+everything must work fine.
+
+To make work the script every 10 min put crontab.txt row to crontab
